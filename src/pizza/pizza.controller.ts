@@ -1,23 +1,37 @@
 import {
 	Body,
 	Controller,
+	Delete,
 	Get,
 	Param,
 	Post,
-	UploadedFiles,
+	Query,
+	UploadedFile,
 	UseInterceptors,
 } from '@nestjs/common'
 import { PizzaService } from './pizza.service'
 import { PizzaDto } from './pizza.dto'
-import { FileFieldsInterceptor } from '@nestjs/platform-express'
+import { FileInterceptor } from '@nestjs/platform-express'
 
 @Controller('pizza')
 export class PizzaController {
 	constructor(private readonly pizzaService: PizzaService) {}
 
 	@Get()
-	async getAll() {
-		return this.pizzaService.getAll()
+	async getAll(
+		@Query('sortBy') sortBy: string,
+		@Query('ascDesc') ascDesc: string,
+		@Query('currentPage') currentPage: string,
+		@Query('categoryID') categoryID?: string,
+		@Query('search') search?: string,
+	) {
+		return this.pizzaService.getAll(
+			sortBy,
+			ascDesc,
+			+currentPage,
+			+categoryID,
+			search,
+		)
 	}
 
 	@Get(':id')
@@ -26,8 +40,18 @@ export class PizzaController {
 	}
 
 	@Post()
-	@UseInterceptors(FileFieldsInterceptor([{ name: 'pizzaUrl', maxCount: 1 }]))
-	async createPizza(@UploadedFiles() files, @Body() dto: PizzaDto) {
-		return this.pizzaService.createPizza(dto, files.pizzaUrl[0])
+	async createPizza(@Body() dto: PizzaDto) {
+		return this.pizzaService.createPizza(dto)
+	}
+
+	@Post()
+	@UseInterceptors(FileInterceptor('pizzaUrl'))
+	async addPizzaImg(@UploadedFile() pizzaUrl, @Param('id') id: string) {
+		return this.pizzaService.addPizzaImg(+id, pizzaUrl)
+	}
+
+	@Delete(':id')
+	async deletePizza(@Param('id') id: string) {
+		return this.pizzaService.deletePizza(+id)
 	}
 }

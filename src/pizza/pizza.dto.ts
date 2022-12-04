@@ -1,6 +1,3 @@
-import { TypeEntity } from '../types/types.entity'
-import { SizeEntity } from '../sizes/size.entity'
-
 export class PizzaDto {
 	title: string
 
@@ -8,9 +5,9 @@ export class PizzaDto {
 
 	isAvailable: boolean
 
-	types: TypeEntity[]
+	types: number[]
 
-	sizes: SizeEntity[]
+	sizes: number[]
 
 	category: number
 }

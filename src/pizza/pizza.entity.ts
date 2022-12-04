@@ -1,4 +1,11 @@
-import { Column, Entity, JoinTable, ManyToMany, ManyToOne } from 'typeorm'
+import {
+	Column,
+	Entity,
+	JoinColumn,
+	JoinTable,
+	ManyToMany,
+	ManyToOne,
+} from 'typeorm'
 import { CategoryEntity } from '../categories/category.entity'
 import { TypeEntity } from '../types/types.entity'
 import { SizeEntity } from '../sizes/size.entity'
@@ -22,13 +29,22 @@ export class PizzaEntity extends Base {
 	isAvailable: boolean
 
 	@ManyToMany(() => TypeEntity, type => type.pizza, { cascade: true })
-	@JoinTable()
+	@JoinTable({
+		name: 'type_pizza',
+		joinColumn: { name: 'pizza_id', referencedColumnName: 'id' },
+		inverseJoinColumn: { name: 'type_id', referencedColumnName: 'id' },
+	})
 	types: TypeEntity[]
 
 	@ManyToMany(() => SizeEntity, size => size.pizza, { cascade: true })
-	@JoinTable()
+	@JoinTable({
+		name: 'size_pizza',
+		joinColumn: { name: 'pizza_id', referencedColumnName: 'id' },
+		inverseJoinColumn: { name: 'size_id', referencedColumnName: 'id' },
+	})
 	sizes: SizeEntity[]
 
 	@ManyToOne(() => CategoryEntity, category => category.pizza)
-	category: number
+	@JoinColumn({ name: 'category_id' })
+	category: CategoryEntity
 }
