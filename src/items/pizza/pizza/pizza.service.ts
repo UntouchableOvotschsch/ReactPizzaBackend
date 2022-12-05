@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm'
 import { PizzaEntity } from './pizza.entity'
 import { FindOptionsWhereProperty, ILike, In, Repository } from 'typeorm'
 import { PizzaDto } from './pizza.dto'
-import { FilesService } from '../files/files.service'
+import { FilesService } from '../../../files/files.service'
 import { TypeEntity } from '../types/types.entity'
 import { SizeEntity } from '../sizes/size.entity'
 import { CategoryEntity } from '../categories/category.entity'
@@ -105,6 +105,7 @@ export class PizzaService {
 			types: types,
 			sizes: sizes,
 			category: category,
+			imageUrl: '',
 		})
 		return await this.pizzaRepository.save(newPizza)
 	}
@@ -119,7 +120,7 @@ export class PizzaService {
 
 	async addPizzaImg(id: number, pizzaImage) {
 		const pizza = await this.pizzaRepository.findOneBy({ id })
-		pizza.imageUrl = this.fileService.createFiles(pizzaImage)
+		pizza.imageUrl = this.fileService.createFiles(pizzaImage, 'pizza')
 		return await this.pizzaRepository.save(pizza)
 	}
 
@@ -134,12 +135,9 @@ export class PizzaService {
 
 	async deletePizza(id: number) {
 		const pizza = await this.pizzaRepository.findOneBy({ id })
-		// const pizzaTypes = await this.typeRepository.findBy({ pizza: pizza })
-		// const pizzaSizes = await this.sizeRepository.findBy({ pizza: pizza })
-
+		await this.fileService.removeFile(pizza.imageUrl, 'pizza')
 		await this.pizzaRepository.delete({ id: id })
-
-
 		return `Пицца ${pizza.title} успешно удалена`
 	}
+
 }

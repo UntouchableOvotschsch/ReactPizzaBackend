@@ -46,7 +46,7 @@ export class PizzaController {
 		return this.pizzaService.createPizza(dto)
 	}
 
-	@Post()
+	@Post(':id')
 	@UseInterceptors(FileInterceptor('pizzaUrl'))
 	async addPizzaImg(@UploadedFile() pizzaUrl, @Param('id') id: string) {
 		return this.pizzaService.addPizzaImg(+id, pizzaUrl)

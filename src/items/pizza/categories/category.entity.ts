@@ -1,6 +1,6 @@
 import { Column, Entity, OneToMany } from 'typeorm'
 import { PizzaEntity } from '../pizza/pizza.entity'
-import { Base } from '../utils/base'
+import { Base } from '../../../utils/base'
 
 @Entity('category')
 export class CategoryEntity extends Base {

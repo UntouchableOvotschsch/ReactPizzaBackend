@@ -9,7 +9,7 @@ import {
 import { CategoryEntity } from '../categories/category.entity'
 import { TypeEntity } from '../types/types.entity'
 import { SizeEntity } from '../sizes/size.entity'
-import { Base } from '../utils/base'
+import { Base } from '../../../utils/base'
 
 @Entity('pizza')
 export class PizzaEntity extends Base {
