@@ -25,18 +25,17 @@ export class PizzaService {
 	async getAll(
 		sortBy: string,
 		ascDesc: string,
-		currentPage: number,
+		currentPage?: number,
+		limit?: number,
 		categoryID?: number,
 		search?: string,
 	) {
 		let options: FindOptionsWhereProperty<PizzaEntity> = {}
 		let orderOptions = {}
 
-		if (search) {
-			options = {
-				title: ILike(`%${search}%`),
-			}
-		}
+		currentPage = currentPage || 1
+		limit = limit || 8
+		const offset = limit * currentPage - limit
 		if (categoryID) {
 			const category = await this.categoryRepository.findOneBy({
 				id: categoryID,
@@ -45,28 +44,39 @@ export class PizzaService {
 				throw new BadRequestException('Категория не найдена')
 			}
 			options = {
-				category: category,
+				category: { id: categoryID },
+			}
+		}
+		if (search) {
+			options = {
+				title: ILike(`%${search}%`),
 			}
 		}
 		if (sortBy === 'title') {
 			orderOptions = {
-				title: ascDesc,
+				title: ascDesc.toUpperCase(),
 			}
 		}
 		if (sortBy === 'price') {
 			orderOptions = {
-				price: ascDesc,
+				price: ascDesc.toUpperCase(),
 			}
 		}
 		if (sortBy === 'rating') {
 			orderOptions = {
-				rating: ascDesc,
+				rating: ascDesc.toUpperCase(),
 			}
 		}
-		return this.pizzaRepository.find({
+		return await this.pizzaRepository.find({
+			relations: {
+				types: true,
+				sizes: true,
+			},
 			where: {
 				...options,
 			},
+			take: limit,
+			skip: offset,
 			order: {
 				...orderOptions,
 			},
@@ -124,12 +134,11 @@ export class PizzaService {
 
 	async deletePizza(id: number) {
 		const pizza = await this.pizzaRepository.findOneBy({ id })
-		const pizzaTypes = await this.typeRepository.findBy({ pizza: pizza })
-		const pizzaSizes = await this.sizeRepository.findBy({ pizza: pizza })
+		// const pizzaTypes = await this.typeRepository.findBy({ pizza: pizza })
+		// const pizzaSizes = await this.sizeRepository.findBy({ pizza: pizza })
 
-		await this.pizzaRepository.remove(pizza)
-		await this.typeRepository.remove(pizzaTypes)
-		await this.sizeRepository.remove(pizzaSizes)
+		await this.pizzaRepository.delete({ id: id })
+
 
 		return `Пицца ${pizza.title} успешно удалена`
 	}

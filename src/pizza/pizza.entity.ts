@@ -45,6 +45,6 @@ export class PizzaEntity extends Base {
 	sizes: SizeEntity[]
 
 	@ManyToOne(() => CategoryEntity, category => category.pizza)
-	@JoinColumn({ name: 'category_id' })
+	@JoinColumn({ name: 'category_id', referencedColumnName: 'id' })
 	category: CategoryEntity
 }

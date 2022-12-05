@@ -21,7 +21,8 @@ export class PizzaController {
 	async getAll(
 		@Query('sortBy') sortBy: string,
 		@Query('ascDesc') ascDesc: string,
-		@Query('currentPage') currentPage: string,
+		@Query('currentPage') currentPage?: string,
+		@Query('limit') limit?: string,
 		@Query('categoryID') categoryID?: string,
 		@Query('search') search?: string,
 	) {
@@ -29,6 +30,7 @@ export class PizzaController {
 			sortBy,
 			ascDesc,
 			+currentPage,
+			+limit,
 			+categoryID,
 			search,
 		)
